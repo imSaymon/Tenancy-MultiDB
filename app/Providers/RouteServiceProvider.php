@@ -29,13 +29,34 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
+            $this->mapApiRoutes();
+
+            $this->mapWebRoutes();
+        });
+    }
+
+    public function mapApiRoutes()
+    {
+        foreach($this->centralDomains() as $domain) {
             Route::middleware('api')
+                ->domain($domain)
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
+        }
+    }
 
+    public function mapWebRoutes()
+    {
+        foreach($this->centralDomains() as $domain) {
             Route::middleware('web')
+                ->domain($domain)
                 ->group(base_path('routes/web.php'));
-        });
+        }
+    }
+
+    protected function centralDomains()
+    {
+        return config('tenancy.central_domains');
     }
 
     /**
